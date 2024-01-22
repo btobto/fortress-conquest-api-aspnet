@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34511.84
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FortressConquestApi", "FortressConquestApi\FortressConquestApi.csproj", "{553C8F82-B034-43D5-9A74-01ED25B448CA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{553C8F82-B034-43D5-9A74-01ED25B448CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{553C8F82-B034-43D5-9A74-01ED25B448CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{553C8F82-B034-43D5-9A74-01ED25B448CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{553C8F82-B034-43D5-9A74-01ED25B448CA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1F75072E-6689-48BD-AF97-2B0EC41BB13D}
+	EndGlobalSection
+EndGlobal
