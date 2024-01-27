@@ -1,6 +1,2 @@
 @FortressConquestApi_HostAddress = http://localhost:5287
 
-GET {{FortressConquestApi_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
