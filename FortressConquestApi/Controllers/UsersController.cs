@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using FortressConquestApi.Data;
 using FortressConquestApi.Models;
 using FortressConquestApi.Services;
+using FortressConquestApi.DTOs;
+using AutoMapper;
+using Newtonsoft.Json;
 
 namespace FortressConquestApi.Controllers
 {
@@ -15,23 +18,29 @@ namespace FortressConquestApi.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly FortressConquestContext _context;
         private readonly UsersService _usersService;
+        private readonly IMapper _mapper;
+        private readonly ILogger<UsersController> _logger;
 
-        public UsersController(FortressConquestContext context, UsersService usersService)
+        public UsersController(
+            UsersService usersService,
+            IMapper mapper,
+            ILogger<UsersController> logger)
         {
-            _context = context;
             _usersService = usersService;
+            _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpGet("leaderboard")]
-        public async Task<ActionResult<PaginatedList<User>>> GetUsers([FromQuery] int page, [FromQuery] int  take)
+        public async Task<ActionResult<PaginatedList<UserDTO>>> GetUsers([FromQuery] int page, [FromQuery] int  take)
         {
-            return await _usersService.GetUsersSortedByXP(page, take);
+            var users = await _usersService.GetUsersSortedByXP(page, take);
+            return _mapper.Map<PaginatedList<UserDTO>>(users);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<ActionResult<UserDTO>> GetUser(Guid id)
         {
             var user = await _usersService.GetUser(id);
 
@@ -40,42 +49,20 @@ namespace FortressConquestApi.Controllers
                 return NotFound();
             }
 
-            return user;
+            return _mapper.Map<UserDTO>(user);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        [HttpPost]
+        public async Task<ActionResult<UserDTO>> PostUser(CreateUserDTO userDto)
         {
-            if (id != user.Id)
+            var user = await _usersService.CreateUser(userDto);
+
+            if (user == null)
             {
                 return BadRequest();
             }
 
-            try
-            {
-                await _usersService.PutUser(user);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_usersService.UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
-        {
-            await _usersService.CreateUser(user);
-
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            return CreatedAtAction("GetUser", new { id = user.Id }, _mapper.Map<UserDTO>(user));
         }
 
         [HttpDelete("{id}")]
@@ -92,7 +79,16 @@ namespace FortressConquestApi.Controllers
         [HttpPost("win")]
         public async Task<IActionResult> OnBattleWin([FromBody] BattleResultDTO result)
         {
+            await _usersService.OnBattleWin(result);
+            return NoContent();
+        }
 
+        [HttpPost("test")]
+        public void Test([FromBody] CreateUserDTO dto)
+        {
+            _logger.LogInformation(JsonConvert.SerializeObject(dto));
+            var user = _mapper.Map<User>(dto);
+            _logger.LogInformation(JsonConvert.SerializeObject(user));
         }
     }
 }

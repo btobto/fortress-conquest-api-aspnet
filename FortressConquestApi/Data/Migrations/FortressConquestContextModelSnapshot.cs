@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using NetTopologySuite.Geometries;
 
 #nullable disable
 
@@ -25,11 +24,9 @@ namespace FortressConquestApi.Data.Migrations
 
             modelBuilder.Entity("FortressConquestApi.Models.Character", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Accuracy")
                         .HasColumnType("int");
@@ -57,27 +54,29 @@ namespace FortressConquestApi.Data.Migrations
 
             modelBuilder.Entity("FortressConquestApi.Models.Fortress", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
 
-                    b.Property<int>("CreatorId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CreatorId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<Point>("Location")
-                        .IsRequired()
-                        .HasColumnType("geography");
+                    b.Property<long>("Latitude")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("Longitude")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("OwnedSince")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("OwnerId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -90,14 +89,12 @@ namespace FortressConquestApi.Data.Migrations
 
             modelBuilder.Entity("FortressConquestApi.Models.User", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("uniqueidentifier");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CharacterId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("CharacterId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -112,7 +109,9 @@ namespace FortressConquestApi.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Level")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -123,7 +122,9 @@ namespace FortressConquestApi.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("XP")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.HasKey("Id");
 

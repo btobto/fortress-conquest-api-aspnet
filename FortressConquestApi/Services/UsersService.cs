@@ -1,7 +1,10 @@
-﻿using FortressConquestApi.Common;
+﻿using AutoMapper;
+using FortressConquestApi.Common;
 using FortressConquestApi.Data;
+using FortressConquestApi.DTOs;
 using FortressConquestApi.Models;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Reflection;
 
 namespace FortressConquestApi.Services
@@ -9,14 +12,17 @@ namespace FortressConquestApi.Services
     public class UsersService
     {
         private readonly FortressConquestContext _context;
-        private readonly FortressesService _fortressesService;
+        private readonly IMapper _mapper;
+        private readonly ILogger<UsersService> _logger;
 
         public UsersService(
             FortressConquestContext context,
-            FortressesService fortressesService) 
+            IMapper mapper,
+            ILogger<UsersService> logger) 
         {
             _context = context;
-            _fortressesService = fortressesService;
+            _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<PaginatedList<User>> GetUsersSortedByXP(int page, int take)
@@ -25,21 +31,55 @@ namespace FortressConquestApi.Services
                 _context.Users.OrderByDescending(u => u.XP).AsNoTracking(), page, take);
         }
 
-        public async Task<User?> GetUser(int id)
+        public async Task<User?> GetUser(Guid id)
         {
-            return await _context.Users.FindAsync(id);
+            var user = await _context.Users
+                .AsNoTracking()
+                .Include(u => u.Character)
+                .Include(u => u.FortressesOwned)
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            if (user != null)
+            {
+                user.FortressCount = user.FortressesOwned.Count;
+            }
+
+            return user;
         }
 
-        public async Task PutUser(User user)
+        public async Task<User?> CreateUser(CreateUserDTO userDto)
         {
-            _context.Entry(user).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-        }
+            _logger.LogInformation(JsonConvert.SerializeObject(userDto));
 
-        public async Task CreateUser(User user)
-        {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            var characterDto = CharacterClassesService.GetCharacterClass(userDto.CharacterName);
+
+            if (characterDto == null)
+            {
+                return null;
+            }
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            User? user = null;
+
+            try
+            {
+                var character = _mapper.Map<Character>(characterDto);
+                await _context.Characters.AddAsync(character);
+
+                user = _mapper.Map<User>(userDto);
+                user.Character = character;
+                await _context.Users.AddAsync(user);
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+            }
+
+            return user;
         }
 
         public async Task<bool> DeleteUser(int id)
@@ -56,9 +96,9 @@ namespace FortressConquestApi.Services
 
         public async Task OnBattleWin(BattleResultDTO result)
         {
-            var winner = await GetUser(result.WinnerId);
-            var loser = await GetUser(result.LoserId);
-            var fortress = await _fortressesService.GetFortress(result.FortressId);
+            var winner = await _context.Users.FindAsync(result.WinnerId);
+            var loser = await _context.Users.FindAsync(result.LoserId);
+            var fortress = await _context.Fortresses.FindAsync(result.FortressId);
 
             if (winner == null || loser == null || fortress == null) return;
 
@@ -100,7 +140,7 @@ namespace FortressConquestApi.Services
             return (int)Math.Floor(Constants.BaseXP * Math.Pow(currentLevel, Constants.LevelModifier));
         }
 
-        public bool UserExists(int id)
+        public bool UserExists(Guid id)
         {
             return _context.Users.Any(e => e.Id == id);
         }

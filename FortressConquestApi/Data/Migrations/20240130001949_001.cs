@@ -1,13 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using NetTopologySuite.Geometries;
 
 #nullable disable
 
 namespace FortressConquestApi.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class _001 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,8 +15,7 @@ namespace FortressConquestApi.Data.Migrations
                 name: "Characters",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Damage = table.Column<int>(type: "int", nullable: false),
                     Armor = table.Column<int>(type: "int", nullable: false),
@@ -34,16 +32,15 @@ namespace FortressConquestApi.Data.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhotoUri = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CharacterId = table.Column<int>(type: "int", nullable: false),
-                    XP = table.Column<int>(type: "int", nullable: false),
-                    Level = table.Column<int>(type: "int", nullable: false)
+                    CharacterId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    XP = table.Column<int>(type: "int", nullable: false, defaultValue: 0),
+                    Level = table.Column<int>(type: "int", nullable: false, defaultValue: 1)
                 },
                 constraints: table =>
                 {
@@ -60,13 +57,13 @@ namespace FortressConquestApi.Data.Migrations
                 name: "Fortresses",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CreatorId = table.Column<int>(type: "int", nullable: false),
-                    OwnerId = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OwnerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()"),
                     OwnedSince = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Location = table.Column<Point>(type: "geography", nullable: false)
+                    Latitude = table.Column<long>(type: "bigint", nullable: false),
+                    Longitude = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -23,6 +23,18 @@ namespace FortressConquestApi.Data
                 .HasMany(u => u.FortressesOwned)
                 .WithOne(f => f.Owner)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.XP)
+                .HasDefaultValue(0);
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.Level)
+                .HasDefaultValue(1);
+
+            modelBuilder.Entity<Fortress>()
+                .Property(f => f.CreatedAt)
+                .HasDefaultValueSql("getdate()");
         }
     }
 }
