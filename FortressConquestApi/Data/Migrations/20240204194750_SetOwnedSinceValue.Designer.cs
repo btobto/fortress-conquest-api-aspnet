@@ -4,6 +4,7 @@ using FortressConquestApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FortressConquestApi.Data.Migrations
 {
     [DbContext(typeof(FortressConquestContext))]
-    partial class FortressConquestContextModelSnapshot : ModelSnapshot
+    [Migration("20240204194750_SetOwnedSinceValue")]
+    partial class SetOwnedSinceValue
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,11 +69,11 @@ namespace FortressConquestApi.Data.Migrations
                     b.Property<Guid>("CreatorId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<double>("Latitude")
-                        .HasColumnType("float");
+                    b.Property<long>("Latitude")
+                        .HasColumnType("bigint");
 
-                    b.Property<double>("Longitude")
-                        .HasColumnType("float");
+                    b.Property<long>("Longitude")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("OwnedSince")
                         .ValueGeneratedOnAdd()

@@ -2,18 +2,19 @@
 
 namespace FortressConquestApi.Models
 {
-    public class PaginatedList<T> : List<T>
+    public class PaginatedList<T>
     {
         public int Page { get; private set; }
         public int PageSize { get; private set; }
         public int PageCount { get; private set; }
+        public List<T> Items { get; private set; }
 
-        public PaginatedList(List<T> items, int page, int pageSize, int pageCount)
+        private PaginatedList(List<T> items, int page, int pageSize, int pageCount)
         {
             Page = page;
             PageSize = pageSize;
             PageCount = pageCount;
-            this.AddRange(items);
+            Items = items;
         }
 
         public static async Task<PaginatedList<T>> CreateAsync(IQueryable<T> source, int page, int pageSize)
@@ -24,10 +25,11 @@ namespace FortressConquestApi.Models
                 .Take(pageSize)
                 .ToListAsync();
 
-            return new PaginatedList<T>(
+            return new(
                 items, 
                 page, 
-                pageSize, (int)Math.Ceiling(count / (double)pageSize));
+                pageSize, 
+                (int)Math.Ceiling(count / (double)pageSize));
         }
     }
 }

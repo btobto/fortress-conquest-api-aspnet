@@ -5,7 +5,6 @@ using FortressConquestApi.DTOs;
 using FortressConquestApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using System.Reflection;
 
 namespace FortressConquestApi.Services
 {
@@ -25,10 +24,10 @@ namespace FortressConquestApi.Services
             _logger = logger;
         }
 
-        public async Task<PaginatedList<User>> GetUsersSortedByXP(int page, int take)
+        public async Task<PaginatedList<User>> GetUsersSortedByXP(int page, int pageSize)
         {
             return await PaginatedList<User>.CreateAsync(
-                _context.Users.OrderByDescending(u => u.XP).AsNoTracking(), page, take);
+                _context.Users.OrderByDescending(u => u.XP).AsNoTracking(), page, pageSize);
         }
 
         public async Task<User?> GetUser(Guid id)

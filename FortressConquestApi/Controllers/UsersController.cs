@@ -33,10 +33,20 @@ namespace FortressConquestApi.Controllers
         }
 
         [HttpGet("leaderboard")]
-        public async Task<ActionResult<PaginatedList<UserDTO>>> GetUsers([FromQuery] int page, [FromQuery] int  take)
+        public async Task<ActionResult<PaginatedList<UserItemDTO>>> GetUsers([FromQuery] int page = 1, [FromQuery] int  pageSize = 10)
         {
-            var users = await _usersService.GetUsersSortedByXP(page, take);
-            return _mapper.Map<PaginatedList<UserDTO>>(users);
+            if (page < 1)
+            {
+                return BadRequest("Page cannot be less that 1.");
+            }
+
+            if (pageSize < 1 || pageSize > 20)
+            {
+                return BadRequest("Page size must be between 1 and 20.");
+            }
+
+            var users = await _usersService.GetUsersSortedByXP(page, pageSize);
+            return _mapper.Map<PaginatedList<UserItemDTO>>(users);
         }
 
         [HttpGet("{id}")]
@@ -81,14 +91,6 @@ namespace FortressConquestApi.Controllers
         {
             await _usersService.OnBattleWin(result);
             return NoContent();
-        }
-
-        [HttpPost("test")]
-        public void Test([FromBody] CreateUserDTO dto)
-        {
-            _logger.LogInformation(JsonConvert.SerializeObject(dto));
-            var user = _mapper.Map<User>(dto);
-            _logger.LogInformation(JsonConvert.SerializeObject(user));
         }
     }
 }

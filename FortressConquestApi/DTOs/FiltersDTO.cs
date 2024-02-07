@@ -7,6 +7,6 @@ namespace FortressConquestApi.DTOs
         public double RadiusInM { get; set; }
         public int LevelFrom { get; set; }
         public int LevelTo { get; set; }
-        public Location Location { get; set; } = null!;
+        public GeoLocation Location { get; set; } = null!;
     }
 }

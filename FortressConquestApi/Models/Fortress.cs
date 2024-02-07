@@ -22,9 +22,11 @@ namespace FortressConquestApi.Models
         public DateTime CreatedAt { get; set; }
 
         public DateTime OwnedSince { get; set; }
-        
-        public long Latitude { get; set; }
 
-        public long Longitude { get; set; }
+        [Required]
+        public double Latitude { get; set; }
+
+        [Required]
+        public double Longitude { get; set; }
     }
 }

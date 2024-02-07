@@ -6,5 +6,7 @@
         public const int BaseXP = 100;
         public const int BaseXPGain = 100;
         public const int BaseXPModifier = 50;
+
+        public const int MinDistanceBetweenFortressesInM = 2;
     }
 }

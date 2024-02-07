@@ -35,6 +35,10 @@ namespace FortressConquestApi.Data
             modelBuilder.Entity<Fortress>()
                 .Property(f => f.CreatedAt)
                 .HasDefaultValueSql("getdate()");
+
+            modelBuilder.Entity<Fortress>()
+                .Property(f => f.OwnedSince)
+                .HasDefaultValueSql("getdate()");
         }
     }
 }
