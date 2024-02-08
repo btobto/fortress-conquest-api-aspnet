@@ -10,7 +10,6 @@ using FortressConquestApi.Models;
 using FortressConquestApi.Services;
 using FortressConquestApi.DTOs;
 using AutoMapper;
-using Newtonsoft.Json;
 
 namespace FortressConquestApi.Controllers
 {
@@ -35,14 +34,16 @@ namespace FortressConquestApi.Controllers
         [HttpGet("leaderboard")]
         public async Task<ActionResult<PaginatedList<UserItemDTO>>> GetUsers([FromQuery] int page = 1, [FromQuery] int  pageSize = 10)
         {
+            const int maxPageSize = 20;
+
             if (page < 1)
             {
                 return BadRequest("Page cannot be less that 1.");
             }
 
-            if (pageSize < 1 || pageSize > 20)
+            if (pageSize < 1 || pageSize > maxPageSize)
             {
-                return BadRequest("Page size must be between 1 and 20.");
+                return BadRequest($"Page size must be between 1 and {maxPageSize}.");
             }
 
             var users = await _usersService.GetUsersSortedByXP(page, pageSize);
@@ -76,13 +77,9 @@ namespace FortressConquestApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
+        public async Task<IActionResult> DeleteUser(Guid id)
         {
-            if (!(await _usersService.DeleteUser(id)))
-            {
-                return NotFound();
-            }
-
+            await _usersService.DeleteUser(id);
             return NoContent();
         }
 

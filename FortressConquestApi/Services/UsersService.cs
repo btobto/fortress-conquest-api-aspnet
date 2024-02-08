@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FortressConquestApi.Common;
+using FortressConquestApi.Common.Exceptions;
 using FortressConquestApi.Data;
 using FortressConquestApi.DTOs;
 using FortressConquestApi.Models;
@@ -54,7 +55,7 @@ namespace FortressConquestApi.Services
 
             if (characterDto == null)
             {
-                return null;
+                throw new ItemNotFoundException("Invalid character name. Character not found.");
             }
 
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -81,25 +82,41 @@ namespace FortressConquestApi.Services
             return user;
         }
 
-        public async Task<bool> DeleteUser(int id)
+        public async Task DeleteUser(Guid id)
         {
             var user = await _context.Users.FindAsync(id);
 
-            if (user == null) return false;
+            if (user == null)
+            {
+                throw new ItemNotFoundException("User not found.");
+            }
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
-
-            return true;
         }
 
         public async Task OnBattleWin(BattleResultDTO result)
         {
             var winner = await _context.Users.FindAsync(result.WinnerId);
+
+            if (winner == null)
+            {
+                throw new ItemNotFoundException("Winner not found.");
+            }
+
             var loser = await _context.Users.FindAsync(result.LoserId);
+
+            if (loser == null)
+            {
+                throw new ItemNotFoundException("Loser not found.");
+            }
+
             var fortress = await _context.Fortresses.FindAsync(result.FortressId);
 
-            if (winner == null || loser == null || fortress == null) return;
+            if (fortress == null)
+            {
+                throw new ItemNotFoundException("Fortress not found.");
+            }
 
             using var transaction = await _context.Database.BeginTransactionAsync();
 

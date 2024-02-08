@@ -1,4 +1,5 @@
 ﻿using FortressConquestApi.Common;
+using FortressConquestApi.Common.Exceptions;
 using FortressConquestApi.Data;
 using FortressConquestApi.DTOs;
 using FortressConquestApi.Models;
@@ -49,12 +50,12 @@ namespace FortressConquestApi.Services
 
             if (user == null)
             {
-                throw new NotImplementedException();
+                throw new ItemNotFoundException("User not found.");
             }
 
             if (user.FortressesCreated.Count == user.Level)
             {
-                throw new NotImplementedException();
+                throw new FortressPlacementForbiddenException("Maximum level of fortresses reached. Level up before placing another one.");
             }
 
             var fortress = new Fortress

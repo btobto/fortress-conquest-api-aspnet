@@ -40,6 +40,5 @@ namespace FortressConquestApi.Controllers
         {
             return await _fortressesService.SetFortress(dto);
         }
-
     }
 }

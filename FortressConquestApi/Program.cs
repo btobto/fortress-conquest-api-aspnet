@@ -1,3 +1,4 @@
+using FortressConquestApi.Common.Exceptions;
 using FortressConquestApi.Data;
 using FortressConquestApi.Services;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(opts => opts.Filters.Add<GlobalExceptionFilter>());
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
