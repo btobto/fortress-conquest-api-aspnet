@@ -38,7 +38,7 @@ namespace FortressConquestApi.Controllers
 
             if (page < 1)
             {
-                return BadRequest("Page cannot be less that 1.");
+                return BadRequest("Page number cannot be less that 1.");
             }
 
             if (pageSize < 1 || pageSize > maxPageSize)

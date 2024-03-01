@@ -1,10 +1,14 @@
 ﻿using FortressConquestApi.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace FortressConquestApi.DTOs
 {
     public class SetFortressDTO
     {
+        [Required]
         public Guid UserId { get; set; }
-        public GeoLocation Location { get; set; } = null!;
+
+        [Required]
+        public Location Location { get; set; } = null!;
     }
 }

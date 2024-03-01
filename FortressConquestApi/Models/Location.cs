@@ -2,7 +2,7 @@
 
 namespace FortressConquestApi.Models
 {
-    public class GeoLocation
+    public class Location
     {
         public double Latitude { get; private set; }
         public double Longitude { get; private set; }
@@ -14,13 +14,11 @@ namespace FortressConquestApi.Models
         private static double MinLongitude = Utils.DegreesToRadians(-180d);
         private static double MaxLongitude = Utils.DegreesToRadians(180d);
 
-        private const double EarthRadiusInM = 6376500.0;
+        private const double EarthRadiusInKm = 6371.01;
 
-        private GeoLocation()
-        {
-        }
+        private Location() { }
 
-        public GeoLocation(double latitude, double longitude)
+        public Location(double latitude, double longitude)
         {
             Latitude = latitude;
             Longitude = longitude;
@@ -31,9 +29,9 @@ namespace FortressConquestApi.Models
             CheckBounds();
         }
 
-        public static GeoLocation FromRadians(double latitude, double longitude)
+        public static Location FromRadians(double latitude, double longitude)
         {
-            var location = new GeoLocation
+            var location = new Location
             {
                 Latitude = Utils.RadiansToDegrees(latitude),
                 Longitude = Utils.RadiansToDegrees(longitude),
@@ -46,39 +44,34 @@ namespace FortressConquestApi.Models
             return location;
         }
 
-        public static GeoLocation FromDegrees(double latitude, double longitude)
-        {
-            return new GeoLocation(latitude, longitude);
-        }
-
         private void CheckBounds()
         {
             if (LatitudeRadians < MinLatitude || LatitudeRadians > MaxLatitude)
             {
-                throw new ArgumentOutOfRangeException(nameof(Latitude), "Latitude must be between -90 and 90 degrees.");
+                throw new ArgumentOutOfRangeException(nameof(Latitude), "Invalid latitude value.");
             }
 
             if (LongitudeRadians < MinLongitude || LongitudeRadians > MaxLongitude)
             {
-                throw new ArgumentOutOfRangeException(nameof(Longitude), "Longitude must be between -180 and 180 degrees.");
+                throw new ArgumentOutOfRangeException(nameof(Longitude), "Invalid longitude value.");
             }
-        }
+        }   
 
-        public double DistanceInMeters(GeoLocation otherLocation)
+        public double DistanceInMeters(Location otherLocation)
         {
             return Math.Acos(Math.Sin(LatitudeRadians) * Math.Sin(otherLocation.LatitudeRadians) +
-                    Math.Cos(LatitudeRadians) * Math.Cos(otherLocation.LatitudeRadians) *
-                    Math.Cos(LongitudeRadians - otherLocation.LongitudeRadians)) * EarthRadiusInM;
+                   Math.Cos(LatitudeRadians) * Math.Cos(otherLocation.LatitudeRadians) *
+                   Math.Cos(LongitudeRadians - otherLocation.LongitudeRadians)) * EarthRadiusInKm;
         }
 
-        public (GeoLocation, GeoLocation) BoundingCoordinates(double radiusInM)
+        public (Location, Location) BoundingCoordinates(double radiusInKm)
         {
-            if (radiusInM < 0)
+            if (radiusInKm < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(radiusInM), "Radius must be a positive number.");
+                throw new ArgumentOutOfRangeException(nameof(radiusInKm), "Radius must be a positive number.");
             }
 
-            double radDist = radiusInM / EarthRadiusInM;
+            double radDist = radiusInKm / EarthRadiusInKm;
 
             double minLat = LatitudeRadians - radDist;
             double maxLat = LatitudeRadians + radDist;
@@ -106,7 +99,7 @@ namespace FortressConquestApi.Models
                 maxLat = Math.Min(maxLat, MaxLatitude);
                 minLon = MinLongitude;
                 maxLon = MaxLongitude;
-            }   
+            }
 
             return (FromRadians(minLat, minLon), FromRadians(maxLat, maxLon));
         }

@@ -26,7 +26,7 @@ namespace FortressConquestApi.Services
 
         public async Task<List<Fortress>> GetFiltered(FiltersDTO filters)
         {
-            (GeoLocation p1, GeoLocation p2) = filters.Location.BoundingCoordinates(filters.RadiusInM);
+            (Location p1, Location p2) = filters.Location.BoundingCoordinates(filters.RadiusInKm);
 
             var boundedFortresses = await _context.Fortresses
                 .AsNoTracking()
@@ -35,7 +35,7 @@ namespace FortressConquestApi.Services
                 .ToListAsync();
 
             return boundedFortresses
-                .Where(f => filters.Location.DistanceInMeters(new GeoLocation(f.Latitude, f.Longitude)) <= filters.RadiusInM)
+                .Where(f => filters.Location.DistanceInMeters(new Location(f.Latitude, f.Longitude)) <= filters.RadiusInKm)
                 .ToList();
         }
 

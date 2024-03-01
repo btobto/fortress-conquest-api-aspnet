@@ -49,7 +49,7 @@ namespace FortressConquestApi.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Characters");
+                    b.ToTable("Characters", (string)null);
                 });
 
             modelBuilder.Entity("FortressConquestApi.Models.Fortress", b =>
@@ -86,7 +86,7 @@ namespace FortressConquestApi.Data.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Fortresses");
+                    b.ToTable("Fortresses", (string)null);
                 });
 
             modelBuilder.Entity("FortressConquestApi.Models.User", b =>
@@ -132,7 +132,7 @@ namespace FortressConquestApi.Data.Migrations
 
                     b.HasIndex("CharacterId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("FortressConquestApi.Models.Fortress", b =>

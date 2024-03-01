@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FortressConquestApi.Common.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Net;
 
-namespace FortressConquestApi.Common.Exceptions
+namespace FortressConquestApi.Common.ExceptionFilters
 {
     public class GlobalExceptionFilter : ExceptionFilterAttribute
     {
@@ -13,6 +14,8 @@ namespace FortressConquestApi.Common.Exceptions
             {
                 ItemNotFoundException => HttpStatusCode.NotFound,
                 FortressPlacementForbiddenException => HttpStatusCode.Conflict,
+                EmailTakenException => HttpStatusCode.Conflict,
+                ArgumentOutOfRangeException => HttpStatusCode.BadRequest,
                 _ => null
             };
 
@@ -23,9 +26,13 @@ namespace FortressConquestApi.Common.Exceptions
                 var problemDetails = new ProblemDetails
                 {
                     Title = ReasonPhrases.GetReasonPhrase(status),
-                    Status = status,
-                    Detail = context.Exception.Message
+                    Status = status
                 };
+
+                if (context.Exception.Message != "")
+                {
+                    problemDetails.Detail = context.Exception.Message;
+                }
 
                 context.Result = new ObjectResult(problemDetails)
                 {

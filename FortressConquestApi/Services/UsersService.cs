@@ -5,7 +5,6 @@ using FortressConquestApi.Data;
 using FortressConquestApi.DTOs;
 using FortressConquestApi.Models;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace FortressConquestApi.Services
 {
@@ -49,7 +48,12 @@ namespace FortressConquestApi.Services
 
         public async Task<User?> CreateUser(CreateUserDTO userDto)
         {
-            _logger.LogInformation(JsonConvert.SerializeObject(userDto));
+            var emailTaken = await IsEmailTaken(userDto.Email);
+
+            if (emailTaken)
+            {
+                throw new EmailTakenException("A user with this email address already exists.");
+            }
 
             var characterDto = CharacterClassesService.GetCharacterClass(userDto.CharacterName);
 
@@ -156,9 +160,9 @@ namespace FortressConquestApi.Services
             return (int)Math.Floor(Constants.BaseXP * Math.Pow(currentLevel, Constants.LevelModifier));
         }
 
-        public bool UserExists(Guid id)
+        private Task<bool> IsEmailTaken(string email)
         {
-            return _context.Users.Any(e => e.Id == id);
+            return _context.Users.AnyAsync(u => u.Email == email);
         }
     }
 }

@@ -1,12 +1,19 @@
 ﻿using FortressConquestApi.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace FortressConquestApi.DTOs
 {
     public class FiltersDTO
     {
-        public double RadiusInM { get; set; }
+        public double RadiusInKm { get; set; }
+
+        [Range(1, int.MaxValue)]
         public int LevelFrom { get; set; }
+
+        [Range(1, int.MaxValue)]
         public int LevelTo { get; set; }
-        public GeoLocation Location { get; set; } = null!;
+
+        [Required]
+        public Location Location { get; set; } = null!;
     }
 }

@@ -32,6 +32,10 @@ namespace FortressConquestApi.Data
                 .Property(u => u.Level)
                 .HasDefaultValue(1);
 
+            modelBuilder.Entity<User>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+
             modelBuilder.Entity<Fortress>()
                 .Property(f => f.CreatedAt)
                 .HasDefaultValueSql("getdate()");

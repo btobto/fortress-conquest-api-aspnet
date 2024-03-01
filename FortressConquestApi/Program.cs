@@ -1,4 +1,4 @@
-using FortressConquestApi.Common.Exceptions;
+using FortressConquestApi.Common.ExceptionFilters;
 using FortressConquestApi.Data;
 using FortressConquestApi.Services;
 using Microsoft.EntityFrameworkCore;
